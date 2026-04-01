@@ -6,6 +6,3 @@ node_modules/
 
 # Database
 database/
-
-# ESLint config
-eslint.config.mjs
