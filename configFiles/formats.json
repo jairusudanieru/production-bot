@@ -1,0 +1,45 @@
+{
+    "formats:assign_project": [
+        "# %title%",
+        "*%channel% - %account%*",
+        "",
+        "**PROJECT LINK:** %projectLink%",
+        "**TRELLO LINK:** %trelloLink%",
+        "",
+        "**DEADLINE:** %deadline%",
+        "**UPLOADING TIME:** %uploadTime%",
+        "",
+        "**EDITOR:** <@%editorId%>"
+    ],
+    "formats:daily_reminder": [
+        "<@%editorId%> - **%channel%** // %title%",
+        "**UPLOADING DATE:** %uploadTime%",
+        "*%account%*"
+    ],
+    "formats:submit_project": [
+        "# %title%",
+        "*%channel% - %account%*",
+        "",
+        "**PROJECT FILE:** %projectFile%",
+        "**EXPORTED OUTPUT:** %exportedOutput%"
+    ],
+    "formats:swap_editor": [
+        "# EDITOR SWAP REQUEST",
+        "**REQUESTING EDITOR:** <@%editorId%>",
+        "**REQUEST REASON:** %swapReason%",
+        "",
+        "**REQUESTED EDITOR:** <@%swapEditorId%>"
+    ],
+    "formats:notify_approved": [
+        "<@%editorId%> The project: **%title%** is now approved!"
+    ],
+    "formats:notify_revsready": [
+        "<@%editorId%> Revisions ready for the project: **%title%**"
+    ],
+    "formats:ping": [
+        "**Client Latency:** %latency%ms",
+        "**Gateway Ping:** %apiPing%ms",
+        "**Uptime:** %hours%h %minutes%m %seconds%s",
+        "**Memory Usage:** %memory%MB"
+    ]
+}
