@@ -96,8 +96,6 @@ module.exports = {
                 messageId: taskMessage.id
             };
 
-            console.log(projectData)
-
             const addedToDatabase = DatabaseManager.set(projectData.id, projectData);
             if (!addedToDatabase) {
                 await interaction.editReply({

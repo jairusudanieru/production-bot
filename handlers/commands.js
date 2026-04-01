@@ -7,8 +7,6 @@ module.exports = function (client) {
 		client.commands.clear();
 		client.commandArray = [];
 
-		const commandsPath = join(__dirname, '../commands');
-
 		const loadCommands = function (dir) {
 			const files = readdirSync(dir);
 			for (const file of files) {
@@ -28,7 +26,13 @@ module.exports = function (client) {
 			}
 		};
 
-		loadCommands(commandsPath);
+		const basePath = join(__dirname, '..');
+		const folders = ['commands', 'context_menus'];
+
+		for (const folder of folders) {
+			const folderPath = join(basePath, folder);
+			loadCommands(folderPath);
+		}
 
 		const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 		try {

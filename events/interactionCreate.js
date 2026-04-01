@@ -17,7 +17,7 @@ module.exports = {
 
 			// Buttons
 			else if (interaction.isButton()) {
-				console.log(interaction.customId)
+				// console.log(interaction.customId)
 				const button = client.buttons?.get(interaction.customId);
 				if (button) {
 					return button.execute(interaction, client);
@@ -54,7 +54,7 @@ module.exports = {
 
 			// Modals
 			else if (interaction.isModalSubmit()) {
-				console.log(interaction.customId)
+				// console.log(interaction.customId)
 				const modal = client.modals?.get(interaction.customId);
 
 				if (modal) {
