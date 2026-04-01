@@ -7,8 +7,5 @@ node_modules/
 # Database
 database/
 
-# Lock file (not recommended, but if you want it ignored)
-package-lock.json
-
 # ESLint config
 eslint.config.mjs
