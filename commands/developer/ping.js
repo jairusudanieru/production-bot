@@ -12,7 +12,9 @@ module.exports = {
         const start = Date.now();
         const uptime = process.uptime();
 
-        await interaction.deferReply({ flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 });
+        await interaction.deferReply({ 
+            flags: MessageFlags.Ephemeral
+        });
 
         try {
             const content = await MessagesHelper.getFormattedMessage('formats:ping', {
@@ -27,18 +29,16 @@ module.exports = {
             const container = new ContainerBuilder().addTextDisplayComponents(
                 new TextDisplayBuilder().setContent(content)
             );
-
+            
             await interaction.editReply({
                 components: [container],
-                flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
+                flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 
             });
-
         } catch (error) {
             console.error('Ping command failed:', error);
 
             return interaction.editReply({
-                content: 'Something went wrong!',
-                flags: MessageFlags.Ephemeral
+                content: 'Something went wrong getting the ping!',
             });
         }
     },
