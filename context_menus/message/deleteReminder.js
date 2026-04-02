@@ -1,13 +1,4 @@
-const {
-    PermissionFlagsBits,
-    ContextMenuCommandBuilder,
-    ApplicationCommandType,
-    MessageFlags,
-    ComponentType,
-    ModalBuilder,
-    LabelBuilder,
-    StringSelectMenuBuilder
-} = require('discord.js');
+const { PermissionFlagsBits, ContextMenuCommandBuilder, ApplicationCommandType, MessageFlags, ComponentType, ModalBuilder, LabelBuilder, StringSelectMenuBuilder } = require("discord.js");
 
 const DatabaseManager = require("../../managers/databaseManager.js");
 

@@ -13,8 +13,8 @@ async function init() {
         const raw = await fs.readFile(FILE_PATH, 'utf8').catch(() => null);
         cache = raw ? JSON.parse(raw) : {};
         initialized = true;
-    } catch (err) {
-        console.error('[FormatsManager] Init failed:', err);
+    } catch (error) {
+        console.error('Something went wrong initializing formats.json!', error);
         cache = {};
     }
 }
@@ -23,8 +23,8 @@ async function save() {
     try {
         await fs.writeFile(FILE_PATH, JSON.stringify(cache, null, 4), 'utf8');
         return true;
-    } catch (err) {
-        console.error('[FormatsManager] Save failed:', err);
+    } catch (error) {
+        console.error('Something went wrong saving formats.json!', error);
         return false;
     }
 }
@@ -34,8 +34,8 @@ module.exports = {
         try {
             await init();
             return id ? cache[id] ?? null : cache;
-        } catch (err) {
-            console.error('[FormatsManager] Get failed:', err);
+        } catch (error) {
+            console.error('Something went wrong getting data from formats.json!', error);
             return null;
         }
     },
@@ -45,8 +45,8 @@ module.exports = {
             await init();
             cache[id] = value;
             return await save();
-        } catch (err) {
-            console.error('[FormatsManager] Set failed:', err);
+        } catch (error) {
+            console.error('Something went wrong setting data to formats.json', error);
             return false;
         }
     },
@@ -56,8 +56,8 @@ module.exports = {
             await init();
             delete cache[id];
             return await save();
-        } catch (err) {
-            console.error('[FormatsManager] Delete failed:', err);
+        } catch (error) {
+            console.error('Something went wrong deleting data from formats.json!', error);
             return false;
         }
     }

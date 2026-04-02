@@ -2,12 +2,7 @@ const path = require('path');
 const Database = require('better-sqlite3');
 
 const dbPath = path.join(__dirname, '../database/projects.db');
-
 const db = new Database(dbPath);
-
-// =======================
-// 🏗️ INIT
-// =======================
 
 db.pragma('journal_mode = WAL');
 
@@ -27,10 +22,6 @@ CREATE TABLE IF NOT EXISTS projects (
 db.prepare(`CREATE INDEX IF NOT EXISTS idx_messageId ON projects(messageId)`).run();
 db.prepare(`CREATE INDEX IF NOT EXISTS idx_createdAt ON projects(createdAt)`).run();
 
-// =======================
-// 🛠️ HELPERS
-// =======================
-
 const parse = (v) => {
     try { return v ? JSON.parse(v) : null; }
     catch { return null; }
@@ -41,13 +32,7 @@ const stringify = (v) => {
     catch { return null; }
 };
 
-// =======================
-// 📦 DATABASE MANAGER
-// =======================
-
 module.exports = {
-
-    // 🟢 CREATE
     create(id, task) {
         try {
             const now = Date.now();
@@ -60,12 +45,11 @@ module.exports = {
 
             return true;
         } catch (error) {
-            console.error('Error creating project:', error);
+            console.error('Something went wrong adding data to database!', error);
             return false;
         }
     },
 
-    // 🔵 GET
     get(idOrMessageId) {
         try {
             const row = db.prepare(`
@@ -86,14 +70,12 @@ module.exports = {
                 createdAt: row.createdAt,
                 updatedAt: row.updatedAt
             };
-
         } catch (error) {
-            console.error('Error getting project:', error);
+            console.error('Something went wrong getting data from database!', error);
             return null;
         }
     },
 
-    // 🟡 SET
     set(id, data) {
         try {
             const now = Date.now();
@@ -120,14 +102,12 @@ module.exports = {
             );
     
             return true;
-    
         } catch (error) {
-            console.error('Error upserting project:', error);
+            console.error('Something went wrong setting data to database!', error);
             return false;
         }
     },
 
-    // 🔥 SAVE
     save(project) {
         try {
             db.prepare(`
@@ -145,14 +125,12 @@ module.exports = {
             );
 
             return true;
-
         } catch (error) {
-            console.error('Error saving project:', error);
+            console.error('Something went wrong saving data to database!', error);
             return false;
         }
     },
 
-    // ❌ DELETE
     delete(id) {
         try {
             const result = db.prepare(`
@@ -160,14 +138,12 @@ module.exports = {
             `).run(id);
 
             return result.changes > 0;
-
         } catch (error) {
-            console.error('Error deleting project:', error);
+            console.error('Something went wrong deleting data from database!', error);
             return false;
         }
     },
 
-    // 🧹 CLEANUP
     cleanup(days = 30) {
         try {
             const cutoff = Date.now() - (1000 * 60 * 60 * 24 * days);
@@ -177,9 +153,8 @@ module.exports = {
             `).run(cutoff);
 
             return result.changes;
-
         } catch (error) {
-            console.error('Error cleaning up projects:', error);
+            console.error('Something went wrong cleaning data in database!', error);
             return 0;
         }
     }

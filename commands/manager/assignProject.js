@@ -1,14 +1,10 @@
-const {
-    SlashCommandBuilder,
-    PermissionFlagsBits,
-    MessageFlags,
-} = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require("discord.js");
 
 const DatabaseManager = require("../../managers/databaseManager.js");
 const ProjectTaskManager = require("../../managers/projectTaskManager.js");
 const ReminderManager = require("../../managers/reminderManager.js");
 
-const { ulid } = require('ulid');
+const { ulid } = require("ulid");
 
 function generateProjectId() {
   return `project-${ulid()}`;

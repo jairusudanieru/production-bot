@@ -1,10 +1,4 @@
-const {
-    SlashCommandBuilder,
-    MessageFlags,
-    PermissionFlagsBits,
-    ContainerBuilder,
-    TextDisplayBuilder
-} = require('discord.js');
+const { SlashCommandBuilder, MessageFlags, PermissionFlagsBits, ContainerBuilder, TextDisplayBuilder } = require("discord.js");
 
 const MessagesHelper = require("../../helpers/messagesHelper.js");
 

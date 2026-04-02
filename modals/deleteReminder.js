@@ -1,4 +1,4 @@
-const { MessageFlags } = require('discord.js');
+const { MessageFlags } = require("discord.js");
 
 const DatabaseManager = require("../managers/databaseManager.js");
 const DiscordHelper = require("../helpers/discordHelper.js");

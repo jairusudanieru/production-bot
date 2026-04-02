@@ -11,11 +11,11 @@ async function getProjectContainer(taskData) {
     const editorButtons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
             .setCustomId(`showSwapRequestModal:${taskData.id}`)
-            .setLabel(`Request for Editor Swap`)
+            .setLabel('Request for Editor Swap')
             .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
             .setCustomId(`showSubmitModal:${taskData.id}`)
-            .setLabel(`Submit Project Files`)
+            .setLabel('Submit Project Files')
             .setStyle(ButtonStyle.Secondary)
     );
 
