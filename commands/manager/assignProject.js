@@ -10,6 +10,10 @@ function generateProjectId() {
   return `project-${ulid()}`;
 }
 
+const LOCK_TIMEOUT = 60_000;
+let commandInUse = false;
+let lockTimer = null;
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('assign-project')
@@ -49,6 +53,19 @@ module.exports = {
             .setRequired(true)),
 
     async execute(interaction) {
+        if (commandInUse) {
+            return interaction.reply({
+                content: 'This command is currently processing other task! Please try again later.',
+                flags: MessageFlags.Ephemeral
+            });
+        }
+
+        commandInUse = true;
+        
+        lockTimer = setTimeout(() => {
+            commandInUse = false;
+        }, LOCK_TIMEOUT);
+
         await interaction.deferReply({ 
             flags: MessageFlags.Ephemeral 
         });
@@ -112,6 +129,9 @@ module.exports = {
             return interaction.editReply({
                 content: 'Failed to assign project!'
             });
+        } finally {
+            clearTimeout(lockTimer);
+            commandInUse = false;
         }
     }
 };
