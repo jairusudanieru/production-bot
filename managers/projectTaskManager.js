@@ -14,7 +14,7 @@ async function getProjectContainer(taskData) {
             .setLabel('Request for Editor Swap')
             .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
-            .setCustomId(`showSubmitModal:${taskData.id}`)
+            .setCustomId(`submitTask:${taskData.id}`)
             .setLabel('Submit Project Files')
             .setStyle(ButtonStyle.Secondary)
     );

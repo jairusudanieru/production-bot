@@ -20,7 +20,7 @@ async function getReminderIndexModal(reminderMessage, options) {
 
         return modal.addLabelComponents(selectMenu);
     } catch (error) {
-        console.error(`Something went wrong creating reminder project modal!`, error);
+        console.error(`Create modal failed:`, error);
         return null;
     }
 }
@@ -66,7 +66,7 @@ module.exports = {
             const options = await getReminderProjects(reminderMessage);
             if (!options.length) {
                 return interaction.reply({
-                    content: 'No projects found in this message!',
+                    content: `No projects found in this message!`,
                     flags: MessageFlags.Ephemeral
                 });
             }
@@ -75,10 +75,10 @@ module.exports = {
             await interaction.showModal(modal);
 
         } catch (error) {
-            console.error('Delete reminder failed:', error);
+            console.error(`Delete reminder failed:`, error);
 
             return interaction.reply({
-                content: 'Something went wrong!',
+                content: `Something went wrong! Please try again...`,
                 flags: MessageFlags.Ephemeral
             });
         }

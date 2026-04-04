@@ -51,8 +51,8 @@ function buildContainerHeader() {
 
 async function buildProjectSection(projectData) {
     const statusMap = {
-        revsready: { buttonLabel: 'Status: Revs Ready', buttonStyle: ButtonStyle.Primary },
-        approved: { buttonLabel: 'Status: Approved', buttonStyle: ButtonStyle.Success },
+        RevsReady: { buttonLabel: 'Status: Revs Ready', buttonStyle: ButtonStyle.Primary },
+        Approved: { buttonLabel: 'Status: Approved', buttonStyle: ButtonStyle.Success },
     };
 
     const { buttonLabel, buttonStyle } = statusMap[projectData.task.status] ??
@@ -97,7 +97,7 @@ module.exports = {
             await reminderMessage.edit({ components: [...components, projectSection] });
             return reminderMessage;
         } catch (error) {
-            console.error('Something went wrong adding project to reminder message!', error);
+            console.error('Adding project to reminder failed:', error);
             return null;
         }
     },
@@ -107,7 +107,7 @@ module.exports = {
             const reminderChannel = await getReminderChannel(client);
             if (!reminderChannel) return null;
 
-            const reminderMessage = await DiscordHelper.getMessageById(reminderChannel, projectData.reminder.id);
+            const reminderMessage = await DiscordHelper.getMessageByURL(client, projectData.reminderUrl);
             if (!reminderMessage) return null;
 
             const components = [...reminderMessage.components];
@@ -120,7 +120,7 @@ module.exports = {
             await reminderMessage.edit({ components });
             return reminderMessage;
         } catch (error) {
-            console.error('Something went wrong editing project in reminder message!', error);
+            console.error('Editing project in reminder failed:', error);
             return null;
         }
     },
@@ -147,7 +147,7 @@ module.exports = {
             await reminderMessage.edit({ components });
             return true;
         } catch (error) {
-            console.error('Something went wrong deleting project from reminder message!', error);
+            console.error('Deleting project from reminder failed:', error);
             return false;
         }
     }

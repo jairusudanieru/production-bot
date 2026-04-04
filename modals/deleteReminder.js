@@ -31,7 +31,7 @@ module.exports = {
             const reminderMessage = await DiscordHelper.getMessageByURL(interaction.client, projectExist.messageUrl);
             await ProjectTaskManager.deleteProjectTask(reminderMessage);
 
-            const deletedFromDatabase = DatabaseManager.delete(projectId);
+            const deletedFromDatabase = DatabaseManager.remove(projectId);
             if (!deletedFromDatabase) {
                 return interaction.editReply({
                     content: `Failed to remove project data from the database!`

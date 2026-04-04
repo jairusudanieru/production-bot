@@ -32,131 +32,137 @@ const stringify = (v) => {
     catch { return null; }
 };
 
-module.exports = {
-    create(id, task) {
-        try {
-            const now = Date.now();
+function create(id, task) {
+    try {
+        const now = Date.now();
 
-            db.prepare(`
-                INSERT INTO projects (id, task, createdAt, updatedAt)
-                VALUES (?, ?, ?, ?)
-                ON CONFLICT(id) DO NOTHING
-            `).run(id, stringify(task), now, now);
+        db.prepare(`
+            INSERT INTO projects (id, task, createdAt, updatedAt)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(id) DO NOTHING
+        `).run(id, stringify(task), now, now);
 
-            return true;
-        } catch (error) {
-            console.error('Something went wrong adding data to database!', error);
-            return false;
-        }
-    },
-
-    get(idOrMessageId) {
-        try {
-            const row = db.prepare(`
-                SELECT * FROM projects
-                WHERE id = ? OR messageId = ?
-                LIMIT 1
-            `).get(idOrMessageId, idOrMessageId);
-
-            if (!row) return null;
-
-            return {
-                id: row.id,
-                task: parse(row.task),
-                messageUrl: row.messageUrl,
-                reminderUrl: row.reminderUrl,
-                submission: parse(row.submission),
-                messageId: row.messageId,
-                createdAt: row.createdAt,
-                updatedAt: row.updatedAt
-            };
-        } catch (error) {
-            console.error('Something went wrong getting data from database!', error);
-            return null;
-        }
-    },
-
-    set(id, data) {
-        try {
-            const now = Date.now();
-    
-            db.prepare(`
-                INSERT INTO projects (id, task, messageUrl, reminderUrl, submission, messageId, createdAt, updatedAt)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(id) DO UPDATE SET
-                    task = COALESCE(excluded.task, task),
-                    messageUrl = COALESCE(excluded.messageUrl, messageUrl),
-                    reminderUrl = COALESCE(excluded.reminderUrl, reminderUrl),
-                    submission = COALESCE(excluded.submission, submission),
-                    messageId = COALESCE(excluded.messageId, messageId),
-                    updatedAt = excluded.updatedAt
-            `).run(
-                id,
-                stringify(data.task ?? null),
-                data.messageUrl ?? null,
-                data.reminderUrl ?? null,
-                stringify(data.submission ?? null),
-                data.messageId ?? null,
-                now,
-                now
-            );
-    
-            return true;
-        } catch (error) {
-            console.error('Something went wrong setting data to database!', error);
-            return false;
-        }
-    },
-
-    save(project) {
-        try {
-            db.prepare(`
-                UPDATE projects
-                SET task = ?, messageUrl = ?, reminderUrl = ?, submission = ?, messageId = ?, updatedAt = ?
-                WHERE id = ?
-            `).run(
-                stringify(project.task),
-                project.messageUrl ?? null,
-                project.reminderUrl ?? null,
-                stringify(project.submission),
-                project.messageId ?? null,
-                Date.now(),
-                project.id
-            );
-
-            return true;
-        } catch (error) {
-            console.error('Something went wrong saving data to database!', error);
-            return false;
-        }
-    },
-
-    delete(id) {
-        try {
-            const result = db.prepare(`
-                DELETE FROM projects WHERE id = ?
-            `).run(id);
-
-            return result.changes > 0;
-        } catch (error) {
-            console.error('Something went wrong deleting data from database!', error);
-            return false;
-        }
-    },
-
-    cleanup(days = 30) {
-        try {
-            const cutoff = Date.now() - (1000 * 60 * 60 * 24 * days);
-
-            const result = db.prepare(`
-                DELETE FROM projects WHERE createdAt < ?
-            `).run(cutoff);
-
-            return result.changes;
-        } catch (error) {
-            console.error('Something went wrong cleaning data in database!', error);
-            return 0;
-        }
+        return true;
+    } catch (error) {
+        console.error('Something went wrong adding data to database!', error);
+        return false;
     }
+}
 
+function get(idOrMessageId) {
+    try {
+        const row = db.prepare(`
+            SELECT * FROM projects
+            WHERE id = ? OR messageId = ?
+            LIMIT 1
+        `).get(idOrMessageId, idOrMessageId);
+
+        if (!row) return null;
+
+        return {
+            id: row.id,
+            task: parse(row.task),
+            messageUrl: row.messageUrl,
+            reminderUrl: row.reminderUrl,
+            submission: parse(row.submission),
+            messageId: row.messageId,
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt
+        };
+    } catch (error) {
+        console.error('Something went wrong getting data from database!', error);
+        return null;
+    }
+}
+
+function set(id, data) {
+    try {
+        const now = Date.now();
+
+        db.prepare(`
+            INSERT INTO projects (id, task, messageUrl, reminderUrl, submission, messageId, createdAt, updatedAt)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+                task = COALESCE(excluded.task, task),
+                messageUrl = COALESCE(excluded.messageUrl, messageUrl),
+                reminderUrl = COALESCE(excluded.reminderUrl, reminderUrl),
+                submission = COALESCE(excluded.submission, submission),
+                messageId = COALESCE(excluded.messageId, messageId),
+                updatedAt = excluded.updatedAt
+        `).run(
+            id,
+            stringify(data.task ?? null),
+            data.messageUrl ?? null,
+            data.reminderUrl ?? null,
+            stringify(data.submission ?? null),
+            data.messageId ?? null,
+            now,
+            now
+        );
+
+        return true;
+    } catch (error) {
+        console.error('Something went wrong setting data to database!', error);
+        return false;
+    }
+}
+
+function save(project) {
+    try {
+        db.prepare(`
+            UPDATE projects
+            SET task = ?, messageUrl = ?, reminderUrl = ?, submission = ?, messageId = ?, updatedAt = ?
+            WHERE id = ?
+        `).run(
+            stringify(project.task),
+            project.messageUrl ?? null,
+            project.reminderUrl ?? null,
+            stringify(project.submission),
+            project.messageId ?? null,
+            Date.now(),
+            project.id
+        );
+
+        return true;
+    } catch (error) {
+        console.error('Something went wrong saving data to database!', error);
+        return false;
+    }
+}
+
+function remove(id) {
+    try {
+        const result = db.prepare(`
+            DELETE FROM projects WHERE id = ?
+        `).run(id);
+
+        return result.changes > 0;
+    } catch (error) {
+        console.error('Something went wrong deleting data from database!', error);
+        return false;
+    }
+}
+
+function cleanup(days = 30) {
+    try {
+        const cutoff = Date.now() - (1000 * 60 * 60 * 24 * days);
+
+        const result = db.prepare(`
+            DELETE FROM projects WHERE createdAt < ?
+        `).run(cutoff);
+
+        return result.changes;
+    } catch (error) {
+        console.error('Something went wrong cleaning data in database!', error);
+        return 0;
+    }
+}
+
+module.exports = {
+    create,
+    get,
+    set,
+    save,
+    remove,
+    cleanup
 };
