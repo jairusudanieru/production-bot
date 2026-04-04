@@ -55,7 +55,7 @@ module.exports = {
     async execute(interaction) {
         if (commandInUse) {
             return interaction.reply({
-                content: 'This command is currently processing other task! Please try again later.',
+                content: `This command is currently processing other task! Please try again later.`,
                 flags: MessageFlags.Ephemeral
             });
         }
@@ -89,14 +89,14 @@ module.exports = {
             const taskMessage = await ProjectTaskManager.sendProjectTask(interaction.channel, taskData);
             if (!taskMessage) {
                 return interaction.editReply({
-                    content: 'Failed to send project task message!'
+                    content: `Failed to send project task message!`
                 });
             }
 
             const reminderMessage = await ReminderManager.addProject(interaction.client, taskData);
             if (!reminderMessage) {
                 await interaction.editReply({
-                    content: 'Failed to add project to reminder message! rolling back task...'
+                    content: `Failed to add project to reminder message! rolling back task...`
                 });
                 await ProjectTaskManager.deleteProjectTask(taskMessage);
                 return;
@@ -112,7 +112,7 @@ module.exports = {
             const addedToDatabase = DatabaseManager.set(projectData.id, projectData);
             if (!addedToDatabase) {
                 await interaction.editReply({
-                    content: 'Failed to add project to database! rolling back task...'
+                    content: `Failed to add project to database! rolling back task...`
                 });
                 await ProjectTaskManager.deleteProjectTask(taskMessage);
                 await ReminderManager.deleteProject(interaction.client, reminderMessage.id, projectData.id);
@@ -120,15 +120,16 @@ module.exports = {
             }
 
             await interaction.editReply({
-                content: 'Project task successfully sent!'
+                content: `Project task successfully sent!`
             });
 
         } catch (error) {
-            console.error('Assign project failed:', error);
+            console.error(`Assign project failed:`, error);
 
-            return interaction.editReply({
-                content: 'Failed to assign project!'
+            await interaction.editReply({
+                content: `Something went wrong! Please try again...`,
             });
+
         } finally {
             clearTimeout(lockTimer);
             commandInUse = false;

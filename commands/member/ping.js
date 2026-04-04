@@ -35,10 +35,10 @@ module.exports = {
                 flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 
             });
         } catch (error) {
-            console.error('Ping command failed:', error);
+            console.error(`Ping command failed:`, error);
 
             return interaction.editReply({
-                content: 'Something went wrong getting the ping!',
+                content: `Something went wrong! Please try again...`,
             });
         }
     },
