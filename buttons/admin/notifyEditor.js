@@ -1,0 +1,75 @@
+const {
+    MessageFlags,
+    ContainerBuilder,
+    TextDisplayBuilder
+} = require('discord.js');
+
+const EditorsHelper = require("../../helpers/editorsHelper.js");
+const DatabaseManager = require("../../managers/databaseManager.js");
+const MessagesHelper = require("../../helpers/messagesHelper.js");
+
+module.exports = {
+    type: 'startsWith',
+    customId: 'editorNotify',
+
+    async execute(interaction) {
+        await interaction.deferUpdate();
+
+        const [id, projectId] = interaction.customId.split(':');
+
+        try {
+            const projectData = DatabaseManager.get(projectId);
+            if (!projectData) {
+                return interaction.followUp({
+                    content: `Project not found in database! Can't update project status.`,
+                    flags: MessageFlags.Ephemeral
+                });
+            }
+
+            const editorChannel = await EditorsHelper.getChannel(interaction.client, projectData.task.editorId);
+            if (!editorChannel) {
+                return interaction.followUp({
+                    content: `Editor channel not found! Can't send the notification.`,
+                    flags: MessageFlags.Ephemeral
+                });
+            }
+
+            let content = ``;
+
+            const status = id.slice(12);
+            switch (status) {
+                case 'RevsReady': content = await MessagesHelper.formatMessage('formats:notify_revsready', projectData);
+                    break;
+                case 'Approved': content = await MessagesHelper.formatMessage('formats:notify_approved', projectData);
+                    break;
+                default:
+                    return interaction.followUp({
+                        content: `Unknown status! Cannot notify the editor.`,
+                    });
+            }
+
+            const textDisplay = new TextDisplayBuilder().setContent(content);
+            const container = new ContainerBuilder().addTextDisplayComponents(textDisplay);
+
+            await editorChannel.send({
+                components: [container],
+                flags: MessageFlags.IsComponentsV2
+            });
+
+            await interaction.deleteReply();
+
+            return interaction.followUp({
+                content: `Editor successfully notified!`,
+                flags: MessageFlags.Ephemeral
+            });
+
+        } catch (error) {
+            console.error(`Notify editor failed:`, error);
+
+            return interaction.followUp({
+                content: `Something went wrong! Please try again...`,
+                flags: MessageFlags.Ephemeral
+            });
+        }
+    }
+};

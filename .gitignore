@@ -1,8 +1,4 @@
-# Dependencies
-node_modules/
-
-# Environment variables
 .env
-
-# Database
+node_modules/
 database/
+configFiles/
