@@ -97,7 +97,7 @@ module.exports = {
             await reminderMessage.edit({ components: [...components, projectSection] });
             return reminderMessage;
         } catch (error) {
-            console.error('Adding project to reminder failed:', error);
+            console.error(`Adding project to reminder failed:`, error);
             return null;
         }
     },
@@ -120,7 +120,7 @@ module.exports = {
             await reminderMessage.edit({ components });
             return reminderMessage;
         } catch (error) {
-            console.error('Editing project in reminder failed:', error);
+            console.error(`Editing project in reminder failed:`, error);
             return null;
         }
     },
@@ -147,7 +147,7 @@ module.exports = {
             await reminderMessage.edit({ components });
             return true;
         } catch (error) {
-            console.error('Deleting project from reminder failed:', error);
+            console.error(`Deleting project from reminder failed:`, error);
             return false;
         }
     }

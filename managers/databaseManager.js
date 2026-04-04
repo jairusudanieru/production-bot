@@ -46,7 +46,7 @@ function create(id, task) {
 
         return true;
     } catch (error) {
-        console.error('Something went wrong adding data to database!', error);
+        console.error(`Something went wrong adding data to database!`, error);
         return false;
     }
 }
@@ -72,7 +72,7 @@ function get(idOrMessageId) {
             updatedAt: row.updatedAt
         };
     } catch (error) {
-        console.error('Something went wrong getting data from database!', error);
+        console.error(`Something went wrong getting data from database!`, error);
         return null;
     }
 }
@@ -104,7 +104,7 @@ function set(id, data) {
 
         return true;
     } catch (error) {
-        console.error('Something went wrong setting data to database!', error);
+        console.error(`Something went wrong setting data to database!`, error);
         return false;
     }
 }
@@ -127,7 +127,7 @@ function save(project) {
 
         return true;
     } catch (error) {
-        console.error('Something went wrong saving data to database!', error);
+        console.error(`Something went wrong saving data to database!`, error);
         return false;
     }
 }
@@ -140,7 +140,7 @@ function remove(id) {
 
         return result.changes > 0;
     } catch (error) {
-        console.error('Something went wrong deleting data from database!', error);
+        console.error(`Something went wrong deleting data from database!`, error);
         return false;
     }
 }
@@ -155,7 +155,7 @@ function cleanup(days = 30) {
 
         return result.changes;
     } catch (error) {
-        console.error('Something went wrong cleaning data in database!', error);
+        console.error(`Something went wrong cleaning data in database!`, error);
         return 0;
     }
 }

@@ -38,7 +38,7 @@ module.exports = {
             const projectData = DatabaseManager.get(projectId);
             if (!projectData) {
                 return interaction.reply({
-                    content: `Project not found! Project's data is probably not in database.`,
+                    content: `Project not found! Project's data is not in the database.`,
                     flags: MessageFlags.Ephemeral
                 });
             }
@@ -47,8 +47,8 @@ module.exports = {
             const exportedOutput = interaction.fields.getTextInputValue('exportedOutput');
 
             const updatedSubmission = {
-                projectFile: projectFile?.trim() || projectData.submission?.projectFile || '',
-                exportedOutput: exportedOutput?.trim() || projectData.submission?.exportedOutput || ''
+                projectFile: projectFile?.trim() || projectData.submission?.projectFile || ' ',
+                exportedOutput: exportedOutput?.trim() || projectData.submission?.exportedOutput || ' '
             };
 
             const editorChannel = await EditorsHelper.getChannel(interaction.client, projectData.task?.editorId);
@@ -59,7 +59,13 @@ module.exports = {
                 });
             }
 
-            const submissionMessage = await DiscordHelper.getMessageByURL(interaction.client, projectData.submission?.messageUrl);
+            const submissionMessageId = projectData.submission?.messageUrl;
+            let submissionMessage = null;
+
+            if (submissionMessageId) {
+                submissionMessage = await DiscordHelper.getMessageByURL(interaction.client, projectData.submission?.messageUrl);
+            }
+            
             if (submissionMessage) {
                 await submissionMessage.delete();
             }
@@ -94,6 +100,7 @@ module.exports = {
 
             await interaction.reply({
                 content: `Something went wrong! Please try again...`,
+                flags: MessageFlags.Ephemeral
             });
         }
     },

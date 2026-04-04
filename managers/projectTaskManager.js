@@ -10,7 +10,7 @@ async function getProjectContainer(taskData) {
 
     const editorButtons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-            .setCustomId(`showSwapRequestModal:${taskData.id}`)
+            .setCustomId(`swapRequest:${taskData.id}`)
             .setLabel('Request for Editor Swap')
             .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
@@ -36,7 +36,7 @@ module.exports = {
                 flags: MessageFlags.IsComponentsV2
             });
         } catch (error) {
-            console.error('Something went wrong sending project task message!', error);
+            console.error(`Something went wrong sending project task message!`, error);
             return null;
         }
     },
@@ -52,7 +52,7 @@ module.exports = {
                 flags: MessageFlags.IsComponentsV2
             });
         } catch (error) {
-            console.error('Something went wrong editing project task message!', error);
+            console.error(`Something went wrong editing project task message!`, error);
             return null;
         }
     },
@@ -64,7 +64,7 @@ module.exports = {
             await message.delete();
             return true;
         } catch (error) {
-            console.error('Something went wrong editing project task message!', error);
+            console.error(`Something went wrong editing project task message!`, error);
             return false;
         }
     }

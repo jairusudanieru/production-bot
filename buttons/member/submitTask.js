@@ -46,7 +46,7 @@ module.exports = {
             const projectData = DatabaseManager.get(projectId);
             if (!projectData) {
                 return interaction.reply({
-                    content: `Project not found! Project's data is probably not in database.`,
+                    content: `Project not found! Project's data is not in the database.`,
                     flags: MessageFlags.Ephemeral
                 });
             }

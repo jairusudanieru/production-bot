@@ -44,7 +44,7 @@ module.exports = {
             const projectData = DatabaseManager.get(projectId);
             if (!projectData) {
                 return interaction.followUp({
-                    content: `Project not found in database! Can't update project status.`,
+                    content: `Project not found! Project's data is not in the database.`,
                 });
             }
 
@@ -65,7 +65,7 @@ module.exports = {
             if (!reminderMessageEdited) {
                 DatabaseManager.set(projectData.id, originalData);
                 return interaction.followUp({
-                    content: `Can't update reminder message! No changes made...`
+                    content: `Can't update reminder message! Rolling back changes...`
                 });
             }
 
