@@ -32,7 +32,7 @@ async function getReminderProjects(message) {
         components.slice(1).map(async (container, index) => {
             const section = container.components?.find(c => c.data?.type === ComponentType.Section);
             if (!section?.accessory?.data?.custom_id) return null;
-            
+
             const projectId = section.accessory.data.custom_id.split(':')[1];
             if (!projectId) return null;
 
@@ -42,7 +42,7 @@ async function getReminderProjects(message) {
             // Fallback: parse title from message content format "... // Project Title\n..."
             const fallbackTitle = section.components?.[0]?.data?.content?.split('\n')[0]?.split('//')[1]?.trim();
             const title = dbTitle ?? fallbackTitle ?? 'Unknown | Deleted in DB';
-            
+
             return {
                 label: `Project ${index + 1}: ${title}`,
                 value: projectId

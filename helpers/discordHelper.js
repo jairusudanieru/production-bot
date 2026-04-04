@@ -28,4 +28,4 @@ module.exports = {
     getChannelById,
     getMessageById,
     getMessageByURL
-}
+};

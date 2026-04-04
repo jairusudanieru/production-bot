@@ -7,7 +7,7 @@ const ReminderManager = require("../../managers/reminderManager.js");
 const { ulid } = require("ulid");
 
 function generateProjectId() {
-  return `project-${ulid()}`;
+    return `project-${ulid()}`;
 }
 
 const LOCK_TIMEOUT = 60_000;
@@ -61,13 +61,13 @@ module.exports = {
         }
 
         commandInUse = true;
-        
+
         lockTimer = setTimeout(() => {
             commandInUse = false;
         }, LOCK_TIMEOUT);
 
-        await interaction.deferReply({ 
-            flags: MessageFlags.Ephemeral 
+        await interaction.deferReply({
+            flags: MessageFlags.Ephemeral
         });
 
         const taskData = {
@@ -81,9 +81,9 @@ module.exports = {
                 deadline: interaction.options.getString('deadline'),
                 uploadTime: interaction.options.getString('upload_time'),
                 editorId: interaction.options.getUser('editor').id,
-                status: 'editing',
+                status: 'Editing',
             }
-        }
+        };
 
         try {
             const taskMessage = await ProjectTaskManager.sendProjectTask(interaction.channel, taskData);

@@ -8,7 +8,7 @@ function getEditor(editorId) {
     return editor ? { id: editorId, ...editor } : null;
 }
 
-async function getChannel(client, editorId) {    
+async function getChannel(client, editorId) {
     const editor = getEditor(editorId);
     if (!editor.channelId) return null;
 
@@ -18,4 +18,4 @@ async function getChannel(client, editorId) {
 module.exports = {
     getEditor,
     getChannel,
-}
+};

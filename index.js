@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, Collection, Partials } = require("discord.js");
-require('dotenv').config({ quiet: true });
+require("dotenv").config({ quiet: true });
 
 const client = new Client({
   intents: [
@@ -28,7 +28,7 @@ async function start() {
   client.handleEvents();
   client.handleButtons();
   client.handleModals();
-  
+
   await client.login(process.env.TOKEN);
 }
 

@@ -1,4 +1,4 @@
-const { PermissionsBitField, MessageFlags, TextDisplayBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder, SectionBuilder } = require('discord.js');
+const { PermissionsBitField, MessageFlags, TextDisplayBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder, SectionBuilder } = require("discord.js");
 
 const DatabaseManager = require("../../managers/databaseManager.js");
 const ReminderManager = require("../../managers/reminderManager.js");
@@ -15,7 +15,7 @@ async function getContainer(projectData) {
     const notifyButton = new ButtonBuilder()
         .setCustomId(`editorNotify${projectData.task.status}:${projectData.id}`)
         .setLabel('Yes')
-        .setStyle(ButtonStyle.Secondary)
+        .setStyle(ButtonStyle.Secondary);
 
     return new ContainerBuilder().addSectionComponents(
         new SectionBuilder()

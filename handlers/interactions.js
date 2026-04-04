@@ -1,5 +1,5 @@
-const { readdirSync, statSync } = require('fs');
-const { join } = require('path');
+const { readdirSync, statSync } = require("fs");
+const { join } = require("path");
 
 function getFiles(dir) {
 	const entries = readdirSync(dir);

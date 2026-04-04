@@ -1,6 +1,6 @@
-const { REST, Routes } = require('discord.js');
-const { readdirSync, statSync } = require('fs');
-const { join, extname } = require('path');
+const { REST, Routes } = require("discord.js");
+const { readdirSync, statSync } = require("fs");
+const { join, extname } = require("path");
 
 module.exports = function (client) {
 	client.handleCommands = async function () {

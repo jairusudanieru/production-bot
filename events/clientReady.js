@@ -30,7 +30,7 @@ module.exports = {
 
     async execute(client) {
         await setPresence(client);
-        
+
         console.log(`Ready! logged in as ${client.user.tag}`);
 
         startCleanupTask();
