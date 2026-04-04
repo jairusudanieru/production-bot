@@ -1,12 +1,8 @@
-const {
-    MessageFlags,
-    ContainerBuilder,
-    TextDisplayBuilder
-} = require('discord.js');
+const { MessageFlags, ContainerBuilder, TextDisplayBuilder } = require("discord.js");
 
-const EditorsHelper = require("../../helpers/editorsHelper.js");
 const DatabaseManager = require("../../managers/databaseManager.js");
-const MessagesHelper = require("../../helpers/messagesHelper.js");
+const EditorsHelper = require("../../helpers/editorsHelper.js");
+const FormatsHelper = require("../../helpers/formatsHelper.js");
 
 module.exports = {
     type: 'startsWith',
@@ -38,9 +34,9 @@ module.exports = {
 
             const status = id.slice(12);
             switch (status) {
-                case 'RevsReady': content = await MessagesHelper.formatMessage('formats:notify_revsready', projectData);
+                case 'RevsReady': content = FormatsHelper.formatMessage('formats:notify_revsready', projectData);
                     break;
-                case 'Approved': content = await MessagesHelper.formatMessage('formats:notify_approved', projectData);
+                case 'Approved': content = FormatsHelper.formatMessage('formats:notify_approved', projectData);
                     break;
                 default:
                     return interaction.followUp({

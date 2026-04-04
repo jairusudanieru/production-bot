@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, MessageFlags, PermissionFlagsBits, ContainerBuilder, TextDisplayBuilder } = require("discord.js");
 
-const MessagesHelper = require("../../helpers/messagesHelper.js");
+const FormatsHelper = require("../../helpers/formatsHelper.js");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,12 +12,12 @@ module.exports = {
         const start = Date.now();
         const uptime = process.uptime();
 
-        await interaction.deferReply({ 
+        await interaction.deferReply({
             flags: MessageFlags.Ephemeral
         });
 
         try {
-            const content = await MessagesHelper.getFormattedMessage('formats:ping', {
+            const content = FormatsHelper.getFormattedMessage('formats:ping', {
                 latency: Date.now() - start,
                 apiPing: Math.round(interaction.client.ws.ping),
                 hours: Math.floor(uptime / 3600),
@@ -29,10 +29,10 @@ module.exports = {
             const container = new ContainerBuilder().addTextDisplayComponents(
                 new TextDisplayBuilder().setContent(content)
             );
-            
+
             await interaction.editReply({
                 components: [container],
-                flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 
+                flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
             });
         } catch (error) {
             console.error(`Ping command failed:`, error);

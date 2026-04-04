@@ -1,7 +1,7 @@
 const { MessageFlags, ContainerBuilder, TextDisplayBuilder, ButtonStyle, ButtonBuilder, SectionBuilder } = require("discord.js");
 
 const DiscordHelper = require("../helpers/discordHelper.js");
-const MessagesHelper = require("../helpers/messagesHelper.js");
+const FormatsHelper = require("../helpers/formatsHelper.js");
 
 async function getReminderChannel(client) {
     return DiscordHelper.getChannelById(client, process.env.REMINDER_CHANNEL_ID);
@@ -58,20 +58,20 @@ async function buildProjectSection(projectData) {
     const { buttonLabel, buttonStyle } = statusMap[projectData.task.status] ??
         { buttonLabel: 'Status: Editing', buttonStyle: ButtonStyle.Secondary };
 
-    const content = await MessagesHelper.formatMessage('formats:daily_reminder', projectData);
+    const content = FormatsHelper.formatMessage('formats:daily_reminder', projectData);
 
     const projectDetails = new TextDisplayBuilder()
-        .setContent(content)
+        .setContent(content);
 
     const statusButton = new ButtonBuilder()
         .setCustomId(`projectStatus:${projectData.id}`)
         .setLabel(buttonLabel)
-        .setStyle(buttonStyle)
+        .setStyle(buttonStyle);
 
     return new ContainerBuilder()
         .addSectionComponents(new SectionBuilder()
             .addTextDisplayComponents(projectDetails)
-            .setButtonAccessory(statusButton))
+            .setButtonAccessory(statusButton));
 }
 
 module.exports = {
@@ -151,4 +151,4 @@ module.exports = {
             return false;
         }
     }
-}
+};

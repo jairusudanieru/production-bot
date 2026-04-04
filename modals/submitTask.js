@@ -1,19 +1,12 @@
-const {
-    MessageFlags,
-    TextDisplayBuilder,
-    ButtonBuilder,
-    ContainerBuilder,
-    ButtonStyle,
-    ActionRowBuilder
-} = require("discord.js");
+const { MessageFlags, TextDisplayBuilder, ButtonBuilder, ContainerBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
 
 const DatabaseManager = require("../managers/databaseManager.js");
 const DiscordHelper = require("../helpers/discordHelper.js");
 const EditorsHelper = require("../helpers/editorsHelper.js");
-const MessagesHelper = require("../helpers/messagesHelper.js");
+const FormatsHelper = require("../helpers/formatsHelper.js");
 
 async function getContainer(projectData) {
-    const content = await MessagesHelper.formatMessage('formats:submit_project', projectData)
+    const content = FormatsHelper.formatMessage('formats:submit_project', projectData);
 
     const testDisplay = new TextDisplayBuilder()
         .setContent(content);
@@ -27,11 +20,11 @@ async function getContainer(projectData) {
             .setLabel('Assigned Project')
             .setURL(projectData.messageUrl ?? 'https://discord.com')
             .setStyle(ButtonStyle.Link),
-    )
+    );
 
     return new ContainerBuilder()
         .addTextDisplayComponents(testDisplay)
-        .addActionRowComponents(editorButtons)
+        .addActionRowComponents(editorButtons);
 }
 
 module.exports = {
@@ -81,7 +74,7 @@ module.exports = {
             projectData.submission = {
                 ...projectData.submission,
                 messageUrl: message.url
-            }
+            };
 
             const databaseUpdated = DatabaseManager.set(projectData.id, projectData);
             if (!databaseUpdated) {

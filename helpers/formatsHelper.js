@@ -1,6 +1,5 @@
 const { escapeMarkdown } = require("discord.js");
-
-const FormatsManager = require("../managers/formatsManager.js");
+const formats = require("../configFiles/formats.json");
 
 function mapProjectData(projectData) {
     if (!projectData) throw new Error('[mapProjectData] Missing projectData');
@@ -21,9 +20,9 @@ function mapProjectData(projectData) {
     };
 }
 
-async function getFormattedMessage(formatKey, replacements = {}) {
-    const formatValue = await FormatsManager.get(formatKey);
-    if (!formatValue) throw new Error(`[format] Missing format: ${formatKey}`);
+function getFormattedMessage(formatKey, replacements = {}) {
+    const formatValue = formats[formatKey];
+    if (!formatValue) throw new Error(`Missing format: ${formatKey}`);
 
     const format = Array.isArray(formatValue)
         ? formatValue.join('\n')
@@ -34,12 +33,12 @@ async function getFormattedMessage(formatKey, replacements = {}) {
     });
 }
 
-async function formatMessage(formatKey, projectData) {
+function formatMessage(formatKey, projectData) {
     const replacements = mapProjectData(projectData);
-    return await getFormattedMessage(formatKey, replacements);
+    return getFormattedMessage(formatKey, replacements);
 }
 
 module.exports = {
     formatMessage,
     getFormattedMessage
-}
+};

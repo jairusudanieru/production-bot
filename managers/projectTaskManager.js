@@ -1,9 +1,9 @@
 const { MessageFlags, ButtonStyle, ButtonBuilder, ActionRowBuilder, ContainerBuilder, TextDisplayBuilder } = require("discord.js");
 
-const MessagesHelper = require("../helpers/messagesHelper.js");
+const FormatsHelper = require("../helpers/formatsHelper.js");
 
 async function getProjectContainer(taskData) {
-    const content = await MessagesHelper.formatMessage('formats:assign_project', taskData);
+    const content = FormatsHelper.formatMessage('formats:assign_project', taskData);
 
     const textDisplay = new TextDisplayBuilder()
         .setContent(content);
@@ -21,7 +21,7 @@ async function getProjectContainer(taskData) {
 
     return new ContainerBuilder()
         .addTextDisplayComponents(textDisplay)
-        .addActionRowComponents(editorButtons)
+        .addActionRowComponents(editorButtons);
 }
 
 module.exports = {
