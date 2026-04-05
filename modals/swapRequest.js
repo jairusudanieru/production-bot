@@ -1,4 +1,4 @@
-const { MessageFlags, ButtonBuilder, ActionRowBuilder, TextDisplayBuilder, ButtonStyle, ContainerBuilder, SeparatorBuilder, SectionBuilder } = require("discord.js");
+const { MessageFlags, ButtonBuilder, ActionRowBuilder, TextDisplayBuilder, ButtonStyle, ContainerBuilder, SeparatorBuilder } = require("discord.js");
 
 const DatabaseManager = require("../managers/databaseManager.js");
 const EditorsHelper = require("../helpers/editorsHelper.js");
