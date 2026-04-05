@@ -47,8 +47,8 @@ module.exports = {
             const exportedOutput = interaction.fields.getTextInputValue('exportedOutput');
 
             const updatedSubmission = {
-                projectFile: projectFile?.trim() || projectData.submission?.projectFile || ' ',
-                exportedOutput: exportedOutput?.trim() || projectData.submission?.exportedOutput || ' '
+                projectFile: projectFile?.trim() || projectData.submission?.projectFile || '',
+                exportedOutput: exportedOutput?.trim() || projectData.submission?.exportedOutput || ''
             };
 
             const editorChannel = await EditorsHelper.getChannel(interaction.client, projectData.task?.editorId);
@@ -59,32 +59,51 @@ module.exports = {
                 });
             }
 
-            const submissionMessageId = projectData.submission?.messageUrl;
             let submissionMessage = null;
+            let submissionEdited = false;
+            let originalComponents = null;
 
-            if (submissionMessageId) {
-                submissionMessage = await DiscordHelper.getMessageByURL(interaction.client, projectData.submission?.messageUrl);
-            }
-            
-            if (submissionMessage) {
-                await submissionMessage.delete();
+            if (projectData.submission?.messageUrl) {
+                submissionMessage = await DiscordHelper.getMessageByURL(
+                    interaction.client,
+                    projectData.submission.messageUrl
+                );
+
+                if (submissionMessage) {
+                    originalComponents = submissionMessage.components;
+                }
             }
 
             projectData.submission = updatedSubmission;
             const container = await getContainer(projectData);
-            const message = await editorChannel.send({
-                components: [container],
-                flags: MessageFlags.IsComponentsV2
-            });
+
+            if (submissionMessage) {
+                await submissionMessage.edit({
+                    components: [container],
+                    flags: MessageFlags.IsComponentsV2
+                });
+
+                submissionEdited = true;
+            } else {
+                submissionMessage = await editorChannel.send({
+                    components: [container],
+                    flags: MessageFlags.IsComponentsV2
+                });
+            }
 
             projectData.submission = {
                 ...projectData.submission,
-                messageUrl: message.url
+                messageUrl: submissionMessage.url
             };
 
             const databaseUpdated = DatabaseManager.set(projectData.id, projectData);
             if (!databaseUpdated) {
-                await message.delete();
+                if (submissionEdited) {
+                    await submissionMessage.edit({
+                        components: [originalComponents],
+                        flags: MessageFlags.IsComponentsV2
+                    });
+                }
                 return interaction.reply({
                     content: `Something went wrong adding submission to database! Please send them manually.`,
                     flags: MessageFlags.Ephemeral
@@ -92,9 +111,10 @@ module.exports = {
             }
 
             await interaction.reply({
-                content: `Project Submitted: ${message.url}`,
+                content: `Project Submitted: ${submissionMessage.url}`,
                 flags: MessageFlags.Ephemeral
             });
+
         } catch (error) {
             console.error(`Submit task failed:`, error);
 
