@@ -1,4 +1,4 @@
-const { MessageFlags, ButtonStyle, ButtonBuilder, ActionRowBuilder, ContainerBuilder, TextDisplayBuilder } = require("discord.js");
+const { MessageFlags, ButtonStyle, ButtonBuilder, ActionRowBuilder, ContainerBuilder, TextDisplayBuilder, SeparatorBuilder } = require("discord.js");
 
 const FormatsHelper = require("../helpers/formatsHelper.js");
 
@@ -21,6 +21,7 @@ async function getProjectContainer(taskData) {
 
     return new ContainerBuilder()
         .addTextDisplayComponents(textDisplay)
+        .addSeparatorComponents(new SeparatorBuilder())
         .addActionRowComponents(editorButtons);
 }
 
