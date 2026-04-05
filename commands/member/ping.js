@@ -16,30 +16,22 @@ module.exports = {
             flags: MessageFlags.Ephemeral
         });
 
-        try {
-            const content = FormatsHelper.getFormattedMessage('formats:ping', {
-                latency: Date.now() - start,
-                apiPing: Math.round(interaction.client.ws.ping),
-                hours: Math.floor(uptime / 3600),
-                minutes: Math.floor((uptime % 3600) / 60),
-                seconds: Math.floor(uptime % 60),
-                memory: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)
-            });
+        const content = FormatsHelper.getFormattedMessage('formats:ping', {
+            latency: Date.now() - start,
+            apiPing: Math.round(interaction.client.ws.ping),
+            hours: Math.floor(uptime / 3600),
+            minutes: Math.floor((uptime % 3600) / 60),
+            seconds: Math.floor(uptime % 60),
+            memory: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)
+        });
 
-            const container = new ContainerBuilder().addTextDisplayComponents(
-                new TextDisplayBuilder().setContent(content)
-            );
+        const container = new ContainerBuilder().addTextDisplayComponents(
+            new TextDisplayBuilder().setContent(content)
+        );
 
-            await interaction.editReply({
-                components: [container],
-                flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
-            });
-        } catch (error) {
-            console.error(`Ping command failed:`, error);
-
-            await interaction.editReply({
-                content: `Something went wrong! Please try again...`,
-            });
-        }
+        await interaction.editReply({
+            components: [container],
+            flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
+        });
     },
 };

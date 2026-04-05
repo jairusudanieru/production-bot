@@ -123,13 +123,6 @@ module.exports = {
                 content: `Project task successfully sent!`
             });
 
-        } catch (error) {
-            console.error(`Assign project failed:`, error);
-
-            await interaction.editReply({
-                content: `Something went wrong! Please try again...`,
-            });
-
         } finally {
             clearTimeout(lockTimer);
             commandInUse = false;

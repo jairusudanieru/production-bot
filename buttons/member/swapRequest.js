@@ -41,33 +41,22 @@ module.exports = {
 
     async execute(interaction) {
         const [, projectId] = interaction.customId.split(':');
-
-        try {
-            const projectData = DatabaseManager.get(projectId);
-            if (!projectData) {
-                return interaction.reply({
-                    content: `Project not found! Project's data is not in the database.`,
-                    flags: MessageFlags.Ephemeral
-                });
-            }
-
-            if (interaction.user.id !== projectData.task?.editorId) {
-                return interaction.reply({
-                    content: `Only the assigned editor can request swap for this project!`,
-                    flags: MessageFlags.Ephemeral
-                });
-            }
-
-            const modal = await getSwapRequestModal(projectData);
-            await interaction.showModal(modal);
-
-        } catch (error) {
-            console.error(`Show swap request modal failed:`, error);
-
-            await interaction.reply({
-                content: `Something went wrong! Please try again...`,
+        const projectData = DatabaseManager.get(projectId);
+        if (!projectData) {
+            return interaction.reply({
+                content: `Project not found! Project's data is not in the database.`,
                 flags: MessageFlags.Ephemeral
             });
         }
+
+        if (interaction.user.id !== projectData.task?.editorId) {
+            return interaction.reply({
+                content: `Only the assigned editor can request swap for this project!`,
+                flags: MessageFlags.Ephemeral
+            });
+        }
+
+        const modal = await getSwapRequestModal(projectData);
+        await interaction.showModal(modal);
     },
 };

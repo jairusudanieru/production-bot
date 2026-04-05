@@ -14,7 +14,7 @@ module.exports = {
         await interaction.deferUpdate();
         const [id, projectId, swapEditorId] = interaction.customId.split(':');
 
-        if (!interaction.user.id === swapEditorId) {
+        if (interaction.user.id !== swapEditorId) {
             if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
                 return interaction.followUp({
                     content: `Only the requested editor can click this button!`,
@@ -38,77 +38,72 @@ module.exports = {
             });
         }
 
-        try {
-            const projectData = DatabaseManager.get(projectId);
-            if (!projectData) {
-                return interaction.followUp({
-                    content: `Project not found! Project's data is not in the database.`,
-                });
-            }
-
-            const taskMessage = await DiscordHelper.getMessageByURL(interaction.client, projectData.messageUrl);
-            if (!taskMessage) {
-                return interaction.followUp({
-                    content: `Project task message not found!`,
-                    flags: MessageFlags.Ephemeral
-                });
-            }
-
-            const editorChannel = await EditorsHelper.getChannel(interaction.client, projectData.task?.editorId);
-            if (!editorChannel) {
-                return interaction.followUp({
-                    content: `Can't find requesing editor's channel!`
-                });
-            }
-
-            const originalData = structuredClone(projectData);
-
-            const newProjectData = {
-                ...projectData,
-                task: {
-                    ...projectData?.task,
-                    editorId: swapEditorId
-                }
-            };
-
-            const messageEdited = await ProjectTaskReminder.editProjectTask(taskMessage, newProjectData);
-            if (!messageEdited) {
-                return interaction.followUp({
-                    content: `Failed to update task message! No changes made...`
-                });
-            }
-
-            const reminderUpdated = await ReminderManager.editProject(interaction.client, newProjectData);
-            if (!reminderUpdated) {
-                await ProjectTaskReminder.editProjectTask(taskMessage, originalData);
-                return interaction.followUp({
-                    content: `Failed to update reminder message! Rolling back changes...`
-                });
-            }
-
-            const databaseUpdated = DatabaseManager.set(newProjectData.id, newProjectData);
-            if (!databaseUpdated) {
-                await ProjectTaskReminder.editProjectTask(taskMessage, originalData);
-                await ReminderManager.editProject(interaction.client, originalData);
-                return interaction.followUp({
-                    content: `Failed to update task database! Rolling back changes...`
-                });
-            }
-
-            await interaction.deleteReply();
-
-            await interaction.followUp({
-                content: 'Editor swap accepted successfully!',
-                flags: MessageFlags.Ephemeral
-            });
-
-        } catch (error) {
-            console.error(`Swap result failed:`, error);
-
-            await interaction.followUp({
-                content: `Something went wrong! Please try again...`,
+        const projectData = DatabaseManager.get(projectId);
+        if (!projectData) {
+            return interaction.followUp({
+                content: `Project not found! Project's data is not in the database.`,
                 flags: MessageFlags.Ephemeral
             });
         }
+
+        const taskMessage = await DiscordHelper.getMessageByURL(interaction.client, projectData.messageUrl);
+        if (!taskMessage) {
+            return interaction.followUp({
+                content: `Project task message not found!`,
+                flags: MessageFlags.Ephemeral
+            });
+        }
+
+        const editorChannel = await EditorsHelper.getChannel(interaction.client, projectData.task?.editorId);
+        if (!editorChannel) {
+            return interaction.followUp({
+                content: `Can't find requesing editor's channel!`,
+                flags: MessageFlags.Ephemeral
+            });
+        }
+
+        const originalData = structuredClone(projectData);
+
+        const newProjectData = {
+            ...projectData,
+            task: {
+                ...projectData?.task,
+                editorId: swapEditorId
+            }
+        };
+
+        const messageEdited = await ProjectTaskReminder.editProjectTask(taskMessage, newProjectData);
+        if (!messageEdited) {
+            return interaction.followUp({
+                content: `Failed to update task message! No changes made...`,
+                flags: MessageFlags.Ephemeral
+            });
+        }
+
+        const reminderUpdated = await ReminderManager.editProject(interaction.client, newProjectData);
+        if (!reminderUpdated) {
+            await ProjectTaskReminder.editProjectTask(taskMessage, originalData);
+            return interaction.followUp({
+                content: `Failed to update reminder message! Rolling back changes...`,
+                flags: MessageFlags.Ephemeral
+            });
+        }
+
+        const databaseUpdated = DatabaseManager.set(newProjectData.id, newProjectData);
+        if (!databaseUpdated) {
+            await ProjectTaskReminder.editProjectTask(taskMessage, originalData);
+            await ReminderManager.editProject(interaction.client, originalData);
+            return interaction.followUp({
+                content: `Failed to update task database! Rolling back changes...`,
+                flags: MessageFlags.Ephemeral
+            });
+        }
+
+        await interaction.deleteReply();
+
+        await interaction.followUp({
+            content: 'Editor swap accepted successfully!',
+            flags: MessageFlags.Ephemeral
+        });
     }
 };

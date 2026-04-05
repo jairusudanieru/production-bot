@@ -1,98 +1,111 @@
 const { Events, MessageFlags } = require("discord.js");
 
 module.exports = {
-	name: Events.InteractionCreate,
+    name: Events.InteractionCreate,
 
-	async execute(interaction, client) {
-		try {
-			// Commands
-			if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
-				const command = client.commands.get(interaction.commandName);
-				if (!command) return;
+    async execute(interaction, client) {
+        try {
+            // Commands
+            if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
+                const command = client.commands.get(interaction.commandName);
+                if (!command) return;
 
-				await command.execute(interaction, client);
-			}
+                await command.execute(interaction, client);
+            }
 
-			// Buttons
-			else if (interaction.isButton()) {
-				// console.log(interaction.customId)
-				const button = client.buttons?.get(interaction.customId);
-				if (button) {
-					return button.execute(interaction, client);
-				}
+            // Buttons
+            else if (interaction.isButton()) {
+                const button = client.buttons?.get(interaction.customId);
+                if (button) {
+                    await button.execute(interaction, client);
+                    return;
+                }
 
-				for (const pattern of client.buttonPatterns) {
-					for (const id of pattern.customIds) {
+                let executed = false;
+                for (const pattern of client.buttonPatterns || []) {
+                    for (const id of pattern.customIds) {
+                        const startsWith = pattern.type === 'startsWith' && interaction.customId.startsWith(id);
+                        const contains = pattern.type === 'contains' && interaction.customId.includes(id);
 
-						const startsWith = pattern.type === 'startsWith' && interaction.customId.startsWith(id);
-						const contains = pattern.type === 'contains' && interaction.customId.includes(id);
+                        if (startsWith || contains) {
+                            await pattern.execute(interaction, client);
+                            executed = true;
+                            break;
+                        }
+                    }
+                    if (executed) break;
+                }
 
-						if (startsWith || contains) {
-							return pattern.execute(interaction, client);
-						}
-					}
-				}
+                if (!executed) {
+                    await interaction.reply({
+                        content: `Sorry, this button doesn't have any function yet!`,
+                        flags: MessageFlags.Ephemeral
+                    });
+                }
+            }
 
-				return interaction.reply({
-					content: `Sorry, this button doesn't have any function yet!`,
-					flags: MessageFlags.Ephemeral
-				});
-			}
+            // Select Menus
+            else if (interaction.isStringSelectMenu()) {
+                const menu = client.selectMenus?.get(interaction.customId);
+                if (!menu) {
+                    return interaction.reply({
+                        content: `Sorry, this select menu doesn't have any function yet!`,
+                        flags: MessageFlags.Ephemeral
+                    });
+                }
 
-			// Select Menus
-			else if (interaction.isStringSelectMenu()) {
-				const menu = client.selectMenus?.get(interaction.customId);
-				if (!menu) return interaction.reply({
-					content: `Sorry, this select menu doesn't have any function yet!`,
-					flags: MessageFlags.Ephemeral
-				});
+                await menu.execute(interaction, client);
+            }
 
-				await menu.execute(interaction, client);
-			}
+            // Modals
+            else if (interaction.isModalSubmit()) {
+                const modal = client.modals?.get(interaction.customId);
 
-			// Modals
-			else if (interaction.isModalSubmit()) {
-				// console.log(interaction.customId)
-				const modal = client.modals?.get(interaction.customId);
+                if (modal) {
+                    await modal.execute(interaction, client);
+                    return;
+                }
 
-				if (modal) {
-					return modal.execute(interaction, client);
-				}
+                let executed = false;
+                for (const pattern of client.modalPatterns || []) {
+                    for (const id of pattern.customIds) {
+                        const startsWith = pattern.type === 'startsWith' && interaction.customId.startsWith(id);
+                        const contains = pattern.type === 'contains' && interaction.customId.includes(id);
 
-				for (const pattern of client.modalPatterns) {
-					for (const id of pattern.customIds) {
+                        if (startsWith || contains) {
+                            await pattern.execute(interaction, client);
+                            executed = true;
+                            break;
+                        }
+                    }
+                    if (executed) break;
+                }
 
-						const startsWith = pattern.type === 'startsWith' && interaction.customId.startsWith(id);
-						const contains = pattern.type === 'contains' && interaction.customId.includes(id);
+                if (!executed) {
+                    await interaction.reply({
+                        content: `Sorry, this modal doesn't have any function yet!`,
+                        flags: MessageFlags.Ephemeral
+                    });
+                }
+            }
+            
+        } catch (error) {
+            console.error(error);
 
-						if (startsWith || contains) {
-							return pattern.execute(interaction, client);
-						}
-					}
-				}
+            const errorPayload = {
+                content: `Something went wrong, please report this to <@${process.env.DEVELOPER_ID}>`,
+                flags: MessageFlags.Ephemeral
+            };
 
-				return interaction.reply({
-					content: `Sorry, this modal doesn't have any function yet!`,
-					flags: MessageFlags.Ephemeral
-				});
-			}
-
-		} catch (error) {
-			console.error(error);
-			const message = `Something went wrong, please report this to <@${process.env.DEVELOPER_ID}>`;
-
-			// Send user-friendly error message if interaction is still valid
-			if (interaction.replied || interaction.deferred) {
-				await interaction.followUp({
-					content: message,
-					flags: MessageFlags.Ephemeral
-				});
-			} else {
-				await interaction.reply({
-					content: message,
-					flags: MessageFlags.Ephemeral
-				});
-			}
-		}
-	},
+            try {
+                if (interaction.replied || interaction.deferred) {
+                    await interaction.followUp(errorPayload);
+                } else {
+                    await interaction.reply(errorPayload);
+                }
+            } catch (fallbackError) {
+                console.error('Failed to send error message to user:', fallbackError);
+            }
+        }
+    },
 };

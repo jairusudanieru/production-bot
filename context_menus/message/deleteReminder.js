@@ -62,25 +62,15 @@ module.exports = {
     async execute(interaction) {
         const reminderMessage = interaction.targetMessage;
 
-        try {
-            const options = await getReminderProjects(reminderMessage);
-            if (!options.length) {
-                return interaction.reply({
-                    content: `No projects found in this message!`,
-                    flags: MessageFlags.Ephemeral
-                });
-            }
-
-            const modal = await getReminderIndexModal(reminderMessage, options);
-            await interaction.showModal(modal);
-
-        } catch (error) {
-            console.error(`Delete reminder failed:`, error);
-
-            await interaction.reply({
-                content: `Something went wrong! Please try again...`,
+        const options = await getReminderProjects(reminderMessage);
+        if (!options.length) {
+            return interaction.reply({
+                content: `No projects found in this message!`,
                 flags: MessageFlags.Ephemeral
             });
         }
+
+        const modal = await getReminderIndexModal(reminderMessage, options);
+        await interaction.showModal(modal);
     }
 };
