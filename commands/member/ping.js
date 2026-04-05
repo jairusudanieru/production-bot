@@ -37,7 +37,7 @@ module.exports = {
         } catch (error) {
             console.error(`Ping command failed:`, error);
 
-            return interaction.editReply({
+            await interaction.editReply({
                 content: `Something went wrong! Please try again...`,
             });
         }

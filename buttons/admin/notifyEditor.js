@@ -54,7 +54,7 @@ module.exports = {
 
             await interaction.deleteReply();
 
-            return interaction.followUp({
+            await interaction.followUp({
                 content: `Editor successfully notified!`,
                 flags: MessageFlags.Ephemeral
             });
@@ -62,7 +62,7 @@ module.exports = {
         } catch (error) {
             console.error(`Notify editor failed:`, error);
 
-            return interaction.followUp({
+            await interaction.followUp({
                 content: `Something went wrong! Please try again...`,
                 flags: MessageFlags.Ephemeral
             });

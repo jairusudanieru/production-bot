@@ -77,7 +77,7 @@ module.exports = {
         } catch (error) {
             console.error(`Delete reminder failed:`, error);
 
-            return interaction.reply({
+            await interaction.reply({
                 content: `Something went wrong! Please try again...`,
                 flags: MessageFlags.Ephemeral
             });

@@ -22,7 +22,7 @@ module.exports = {
         await interaction.deferReply({
             flags: MessageFlags.Ephemeral
         });
-    
+
         const [, reminderId] = interaction.customId.split(':');
         const projectId = await getProjectId(interaction);
 
@@ -33,20 +33,20 @@ module.exports = {
 
             const deletedFromDatabase = DatabaseManager.remove(projectId);
             if (!deletedFromDatabase) {
-                return interaction.editReply({
+                await interaction.editReply({
                     content: `Failed to remove project data from the database!`
                 });
             }
         }
-    
+
         const deletedFromReminder = await ReminderManager.deleteProject(interaction.client, reminderId, projectId);
         if (!deletedFromReminder) {
             return interaction.editReply({
                 content: `Failed to remove project from the reminder message!`
             });
         }
-    
-        return interaction.editReply({
+
+        await interaction.editReply({
             content: projectId ? `Removed: ${projectId}` : `Removed project from reminder (no database record found).`
         });
     }

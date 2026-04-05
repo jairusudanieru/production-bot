@@ -72,14 +72,14 @@ module.exports = {
             if (nextStatus === 'Editing') return;
 
             const container = await getContainer(projectData);
-            return interaction.followUp({
+            await interaction.followUp({
                 components: [container],
                 flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
             });
         } catch (error) {
             console.error(`Project status update failed:`, error);
 
-            return interaction.followUp({
+            await interaction.followUp({
                 content: `Something went wrong! Please try again...`,
                 flags: MessageFlags.Ephemeral
             });

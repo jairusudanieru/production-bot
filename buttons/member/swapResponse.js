@@ -14,8 +14,6 @@ module.exports = {
         await interaction.deferUpdate();
         const [id, projectId, swapEditorId] = interaction.customId.split(':');
 
-        console.log(swapEditorId);
-
         if (!interaction.user.id === swapEditorId) {
             if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
                 return interaction.followUp({
