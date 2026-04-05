@@ -5,6 +5,7 @@ module.exports = {
 
 	async execute(interaction, client) {
 		try {
+			// Commands
 			if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
 				const command = client.commands.get(interaction.commandName);
 				if (!command) return;
@@ -33,7 +34,7 @@ module.exports = {
 				}
 
 				return interaction.reply({
-					content: 'Sorry, this button doesn\'t have any function yet!',
+					content: `Sorry, this button doesn't have any function yet!`,
 					flags: MessageFlags.Ephemeral
 				});
 			}
@@ -42,7 +43,7 @@ module.exports = {
 			else if (interaction.isStringSelectMenu()) {
 				const menu = client.selectMenus?.get(interaction.customId);
 				if (!menu) return interaction.reply({
-					content: 'Sorry, this select menu doesn\'t have any function yet!',
+					content: `Sorry, this select menu doesn't have any function yet!`,
 					flags: MessageFlags.Ephemeral
 				});
 
@@ -71,22 +72,25 @@ module.exports = {
 				}
 
 				return interaction.reply({
-					content: 'Sorry, this modal doesn\'t have any function yet!',
+					content: `Sorry, this modal doesn't have any function yet!`,
 					flags: MessageFlags.Ephemeral
 				});
 			}
+
 		} catch (error) {
 			console.error(error);
+			const message = `Something went wrong, please report this to <@${process.env.DEVELOPER_ID}>`;
 
 			// Send user-friendly error message if interaction is still valid
 			if (interaction.replied || interaction.deferred) {
-				await interaction.editReply({
-					content: 'Tell <@846982740377075763> there\'s an error with my code!',
+				await interaction.followUp({
+					content: message,
 					flags: MessageFlags.Ephemeral
 				});
 			} else {
-				await interaction.channel.send({
-					content: 'Tell <@846982740377075763> there\'s an error with my code!',
+				await interaction.reply({
+					content: message,
+					flags: MessageFlags.Ephemeral
 				});
 			}
 		}
