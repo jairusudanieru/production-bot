@@ -18,6 +18,7 @@ module.exports = {
         }
 
         const updatedProjectData = {
+            swapOriginalEditorId: interaction.user.id,
             swapEditorId: interaction.fields.getSelectedUsers('swapEditor')?.first().id || '',
             swapReason: interaction.fields.getTextInputValue('swapReason') || '',
         };

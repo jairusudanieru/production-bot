@@ -13,8 +13,10 @@ function mapProjectData(projectData) {
         trelloLink: projectData.task?.trello,
         deadline: projectData.task?.deadline,
         uploadTime: projectData.task?.uploadTime,
+        messageUrl: projectData.messageUrl,
         projectFile: projectData.submission?.projectFile,
         exportedOutput: projectData.submission?.exportedOutput,
+        swapOriginalEditorId: projectData.swap?.swapOriginalEditorId,
         swapReason: projectData.swap?.swapReason,
         swapEditorId: projectData.swap?.swapEditorId
     };

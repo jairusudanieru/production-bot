@@ -169,9 +169,24 @@ async function editSwapConfirmation(message, taskData, clickedAction = null) {
     }
 }
 
+async function sendSwapResult(editorChannel, projectData, result) {
+    try {
+        let message = FormatsHelper.formatMessage('formats:swap_approved', projectData);
+        if (!result) message = FormatsHelper.formatMessage('formats:swap_rejected', projectData);
+
+        await editorChannel.send({
+            content: message
+        });
+
+    } catch (error) {
+        return console.error(`Something went wrong sending swap result!`, error);
+    }
+}
+
 module.exports = {
     sendEditorRequest,
     editEditorRequest,
     sendSwapConfirmation,
-    editSwapConfirmation
+    editSwapConfirmation,
+    sendSwapResult
 };

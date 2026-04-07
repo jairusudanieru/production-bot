@@ -30,22 +30,6 @@ module.exports = {
             });
         }
 
-        const result = id.slice(11);
-        if (result === 'Reject') {
-            const message = await EditorSwapManager.editSwapConfirmation(interaction.message, projectData, 'reject');
-            if (!message) {
-                return interaction.followUp({
-                    content: 'Failed to reject confirmation!',
-                    flags: MessageFlags.Ephemeral
-                });
-            }
-
-            return interaction.followUp({
-                content: 'Editor swap declined successfully!',
-                flags: MessageFlags.Ephemeral
-            });
-        }
-
         const taskMessage = await DiscordHelper.getMessageByURL(interaction.client, projectData.messageUrl);
         if (!taskMessage) {
             return interaction.followUp({
@@ -66,14 +50,29 @@ module.exports = {
 
         const newProjectData = {
             ...projectData,
-            swap: {
-                ...projectData.swap  // ✅ preserve swapReason and swapEditorId
-            },
             task: {
                 ...projectData.task,
                 editorId: swapEditorId
             }
         };
+
+        const result = id.slice(11);
+        if (result === 'Reject') {
+            const message = await EditorSwapManager.editSwapConfirmation(interaction.message, projectData, 'reject');
+            if (!message) {
+                return interaction.followUp({
+                    content: 'Failed to reject confirmation!',
+                    flags: MessageFlags.Ephemeral
+                });
+            }
+
+            await EditorSwapManager.sendSwapResult(editorChannel, newProjectData, false);
+
+            return interaction.followUp({
+                content: 'Editor swap declined successfully!',
+                flags: MessageFlags.Ephemeral
+            });
+        }
 
         const messageEdited = await ProjectTaskReminder.editProjectTask(taskMessage, newProjectData);
         if (!messageEdited) {
@@ -118,5 +117,7 @@ module.exports = {
             content: 'Editor swap accepted successfully!',
             flags: MessageFlags.Ephemeral
         });
+
+        await EditorSwapManager.sendSwapResult(editorChannel, newProjectData, true);
     }
 };
