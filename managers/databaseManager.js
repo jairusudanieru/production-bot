@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS projects (
     reminderUrl TEXT,
     submission TEXT,
     messageId TEXT,
+    swap TEXT,
     createdAt INTEGER,
     updatedAt INTEGER
 )
@@ -68,6 +69,7 @@ function get(idOrMessageId) {
             reminderUrl: row.reminderUrl,
             submission: parse(row.submission),
             messageId: row.messageId,
+            swap: parse(row.swap),
             createdAt: row.createdAt,
             updatedAt: row.updatedAt
         };
@@ -82,14 +84,15 @@ function set(id, data) {
         const now = Date.now();
 
         db.prepare(`
-            INSERT INTO projects (id, task, messageUrl, reminderUrl, submission, messageId, createdAt, updatedAt)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO projects (id, task, messageUrl, reminderUrl, submission, messageId, swap, createdAt, updatedAt)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 task = COALESCE(excluded.task, task),
                 messageUrl = COALESCE(excluded.messageUrl, messageUrl),
                 reminderUrl = COALESCE(excluded.reminderUrl, reminderUrl),
                 submission = COALESCE(excluded.submission, submission),
                 messageId = COALESCE(excluded.messageId, messageId),
+                swap = excluded.swap,
                 updatedAt = excluded.updatedAt
         `).run(
             id,
@@ -98,6 +101,7 @@ function set(id, data) {
             data.reminderUrl ?? null,
             stringify(data.submission ?? null),
             data.messageId ?? null,
+            stringify(data.swap ?? null),  // ✅ added
             now,
             now
         );
@@ -113,7 +117,7 @@ function save(project) {
     try {
         db.prepare(`
             UPDATE projects
-            SET task = ?, messageUrl = ?, reminderUrl = ?, submission = ?, messageId = ?, updatedAt = ?
+            SET task = ?, messageUrl = ?, reminderUrl = ?, submission = ?, messageId = ?, swap = ?, updatedAt = ?
             WHERE id = ?
         `).run(
             stringify(project.task),
@@ -121,6 +125,7 @@ function save(project) {
             project.reminderUrl ?? null,
             stringify(project.submission),
             project.messageId ?? null,
+            stringify(project.swap ?? null),
             Date.now(),
             project.id
         );

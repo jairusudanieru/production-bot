@@ -1,35 +1,8 @@
-const { MessageFlags, ButtonBuilder, ActionRowBuilder, TextDisplayBuilder, ButtonStyle, ContainerBuilder, SeparatorBuilder } = require("discord.js");
+const { MessageFlags } = require("discord.js");
 
 const DatabaseManager = require("../managers/databaseManager.js");
 const EditorsHelper = require("../helpers/editorsHelper.js");
-const FormatsHelper = require("../helpers/formatsHelper.js");
-
-async function getContainer(projectData) {
-    const content = FormatsHelper.formatMessage('formats:swap_editor', projectData);
-
-    const swapDetails = new TextDisplayBuilder()
-        .setContent(content);
-
-    const editorButtons = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-            .setCustomId(`editorSwapAccept:${projectData.id}:${projectData.swap?.swapEditorId}`)
-            .setLabel('Accept')
-            .setStyle(ButtonStyle.Primary),
-        new ButtonBuilder()
-            .setLabel('Assigned Project')
-            .setURL(projectData.messageUrl ?? 'https://discord.com')
-            .setStyle(ButtonStyle.Link),
-        new ButtonBuilder()
-            .setCustomId(`editorSwapDecline:${projectData.id}:${projectData.swap?.swapEditorId}`)
-            .setLabel('Decline')
-            .setStyle(ButtonStyle.Danger),
-    );
-
-    return new ContainerBuilder()
-        .addTextDisplayComponents(swapDetails)
-        .addSeparatorComponents(new SeparatorBuilder())
-        .addActionRowComponents(editorButtons);
-}
+const EditorSwapManager = require("../managers/editorSwapManager.js");
 
 module.exports = {
     type: 'startsWith',
@@ -64,11 +37,21 @@ module.exports = {
             }
         };
 
-        const container = await getContainer(newProjectData);
-        const request = await requestedEditorChannel.send({
-            components: [container],
-            flags: MessageFlags.IsComponentsV2,
-        });
+        const databaseUpdated = DatabaseManager.set(projectId, newProjectData);
+        if (!databaseUpdated) {
+            return interaction.reply({
+                content: 'Failed to save swap data!',
+                flags: MessageFlags.Ephemeral
+            });
+        }
+
+        const request = await EditorSwapManager.sendEditorRequest(requestedEditorChannel, newProjectData);
+        if (!request) {
+            return interaction.reply({
+                content: `Failed to send the request message!`,
+                flags: MessageFlags.Ephemeral
+            });
+        }
 
         await interaction.reply({
             content: `Request Submitted! ${request.url}`,

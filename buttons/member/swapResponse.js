@@ -3,8 +3,7 @@ const { PermissionsBitField, MessageFlags } = require("discord.js");
 const DatabaseManager = require("../../managers/databaseManager.js");
 const DiscordHelper = require("../../helpers/discordHelper.js");
 const EditorsHelper = require("../../helpers/editorsHelper.js");
-const ProjectTaskReminder = require("../../managers/projectTaskManager.js");
-const ReminderManager = require("../../managers/reminderManager.js");
+const EditorSwapManager = require("../../managers/editorSwapManager.js");
 
 module.exports = {
     type: 'startsWith',
@@ -28,22 +27,28 @@ module.exports = {
             });
         }
 
-        const result = id.slice(10);
-        if (result === 'Decline') {
-            await interaction.deleteReply();
-
-            return interaction.followUp({
-                content: 'Editor swap declined successfully!',
-                flags: MessageFlags.Ephemeral
-            });
-        }
-
         const projectData = DatabaseManager.get(projectId);
         if (!projectData) {
             return interaction.followUp({
                 content: `Project not found! Project's data is not in the database.`,
                 flags: MessageFlags.Ephemeral
             });
+        }
+
+        const result = id.slice(10);
+        if (result === 'Decline') {
+            const message = await EditorSwapManager.editEditorRequest(interaction.message, projectData, 'decline');
+            if (!message) {
+                return interaction.followUp({
+                    content: 'Failed to decline swap request!',
+                    flags: MessageFlags.Ephemeral
+                });
+            }
+
+            return interaction.followUp({
+                content: 'Editor swap declined successfully!',
+                flags: MessageFlags.Ephemeral
+            });;
         }
 
         const taskMessage = await DiscordHelper.getMessageByURL(interaction.client, projectData.messageUrl);
@@ -62,48 +67,20 @@ module.exports = {
             });
         }
 
-        const originalData = structuredClone(projectData);
-
-        const newProjectData = {
-            ...projectData,
-            task: {
-                ...projectData?.task,
-                editorId: swapEditorId
-            }
-        };
-
-        const messageEdited = await ProjectTaskReminder.editProjectTask(taskMessage, newProjectData);
-        if (!messageEdited) {
+        const confirmMessage = await EditorSwapManager.sendSwapConfirmation(interaction.message, projectData);
+        if (!confirmMessage) {
             return interaction.followUp({
-                content: `Failed to update task message! No changes made...`,
+                content: 'Failed to send confirm message!',
                 flags: MessageFlags.Ephemeral
             });
         }
 
-        const reminderUpdated = await ReminderManager.editProject(interaction.client, newProjectData);
-        if (!reminderUpdated) {
-            await ProjectTaskReminder.editProjectTask(taskMessage, originalData);
+        const message = await EditorSwapManager.editEditorRequest(interaction.message, projectData, 'accept');
+        if (!message) {
             return interaction.followUp({
-                content: `Failed to update reminder message! Rolling back changes...`,
+                content: 'Failed to accept swap request!',
                 flags: MessageFlags.Ephemeral
             });
         }
-
-        const databaseUpdated = DatabaseManager.set(newProjectData.id, newProjectData);
-        if (!databaseUpdated) {
-            await ProjectTaskReminder.editProjectTask(taskMessage, originalData);
-            await ReminderManager.editProject(interaction.client, originalData);
-            return interaction.followUp({
-                content: `Failed to update task database! Rolling back changes...`,
-                flags: MessageFlags.Ephemeral
-            });
-        }
-
-        await interaction.deleteReply();
-
-        await interaction.followUp({
-            content: 'Editor swap accepted successfully!',
-            flags: MessageFlags.Ephemeral
-        });
     }
 };
