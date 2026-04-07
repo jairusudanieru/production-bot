@@ -48,7 +48,7 @@ module.exports = {
             return interaction.followUp({
                 content: 'Editor swap declined successfully!',
                 flags: MessageFlags.Ephemeral
-            });;
+            });
         }
 
         const taskMessage = await DiscordHelper.getMessageByURL(interaction.client, projectData.messageUrl);
